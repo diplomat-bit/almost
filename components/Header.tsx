@@ -1,6 +1,7 @@
 
 import React, { useState, useContext, useEffect } from 'react';
 import { DataContext } from '../context/DataContext';
+import { useAuth } from '../context/AuthContext';
 import { View, Notification } from '../types';
 import { Infinity } from 'lucide-react'; // Conceptual icon
 
@@ -47,6 +48,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const context = useContext(DataContext);
+  const { logout, user } = useAuth(); // ⚡️ SNATCH THE REAL LOGOUT ENGINE
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
@@ -106,16 +108,45 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
             )}
         </div>
         <div className="relative">
-            <button onClick={() => setIsProfileOpen(prev => !prev)} className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-indigo-600 flex items-center justify-center border-2 border-cyan-400">
-                    <span className="font-bold text-white">II</span>
+            <button 
+                onClick={() => setIsProfileOpen(prev => !prev)} 
+                className="flex items-center space-x-3 group outline-none"
+            >
+                <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all group-hover:scale-105 group-active:scale-95">
+                    {user?.picture ? (
+                        <img src={user.picture} alt="Profile" className="w-full h-full object-cover" />
+                    ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-cyan-500 to-indigo-600 flex items-center justify-center text-white font-bold">
+                            {user?.name?.charAt(0) || 'I'}
+                        </div>
+                    )}
                 </div>
-                <span className="hidden sm:block font-medium text-white">The Caretaker</span>
+                <div className="hidden sm:flex flex-col items-start leading-tight text-left">
+                    <span className="font-bold text-white text-sm tracking-tighter uppercase">{user?.name || 'The Caretaker'}</span>
+                    <span className="text-[9px] text-cyan-400 font-mono uppercase tracking-widest">Architect Level</span>
+                </div>
             </button>
+
             {isProfileOpen && (
-                 <div className="absolute right-0 mt-2 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-50">
-                     <a href="#" onClick={(e)=>{e.preventDefault(); setActiveView(View.Settings); setIsProfileOpen(false);}} className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">Settings</a>
-                     <a href="#" onClick={(e)=>{e.preventDefault(); alert('Logout functionality not implemented.');}} className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">Logout</a>
+                 <div className="absolute right-0 mt-3 w-56 bg-gray-900/95 backdrop-blur-xl border border-gray-700 rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                     <div className="p-4 border-b border-gray-800 bg-gray-800/50">
+                        <p className="text-[10px] text-gray-500 uppercase font-black tracking-widest mb-1">Active Session</p>
+                        <p className="text-xs text-white font-mono truncate">{user?.email || 'authenticated-node'}</p>
+                     </div>
+                     <div className="p-2">
+                        <button 
+                            onClick={() => { setActiveView(View.Settings); setIsProfileOpen(false); }} 
+                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-800 rounded-xl transition-colors"
+                        >
+                            <Settings size={16} className="text-gray-500" /> Settings
+                        </button>
+                        <button 
+                            onClick={() => logout()} 
+                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 rounded-xl transition-colors group"
+                        >
+                            <LogOut size={16} className="text-red-500 group-hover:translate-x-1 transition-transform" /> Logout Session
+                        </button>
+                     </div>
                  </div>
             )}
         </div>
