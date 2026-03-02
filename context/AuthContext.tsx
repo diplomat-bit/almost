@@ -1,7 +1,7 @@
 
 import React, { createContext, useState, ReactNode, useCallback, useEffect, useContext } from 'react';
 import { User as BaseUser } from '../types';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth0, RedirectLoginOptions } from '@auth0/auth0-react';
 
 export type UserRole = 'ADMIN' | 'TRADER' | 'CLIENT' | 'VISIONARY' | 'CARETAKER' | 'QUANT_ANALYST' | 'SYSTEM_ARCHITECT' | 'ETHICS_OFFICER' | 'DATA_SCIENTIST' | 'NETWORK_WEAVER' | 'CITIZEN';
 export type SecurityLevel = 'STANDARD' | 'ELEVATED' | 'TRADING_UNLOCKED' | 'QUANTUM_ENCRYPTED' | 'SOVEREIGN_CLEARED' | 'ARCHITECT_LEVEL';
@@ -93,7 +93,8 @@ interface IAuthContext {
 
     loginWithCredentials: (email: string, pass: string) => Promise<boolean>;
     loginWithBiometrics: () => Promise<boolean>;
-    loginWithSSO: () => Promise<void>;
+    loginWithSSO: (options?: RedirectLoginOptions) => Promise<void>; // ⚡️ FIXED
+    loginWithSignup: () => Promise<void>; // ⚡️ ADDED
     logout: () => Promise<void>;
 
     elevateSessionForTrading: (twoFactorCode: string) => Promise<boolean>;
@@ -181,6 +182,7 @@ const initialQuantumLink: QuantumEntanglementLink = {
     qbitErrorRate: 0.001,
 };
 
+// ⚡️ VITE HMR FIX: Export the context directly here
 export const AuthContext = createContext<IAuthContext | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -205,7 +207,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // Sync Auth0 User with App User State
     useEffect(() => {
         if (auth0IsAuthenticated && auth0User) {
-            // Hydrate the application user state with Auth0 data + default complex fields
             setUser({
                 ...visionaryUserTemplate,
                 id: auth0User.sub || visionaryUserTemplate.id,
@@ -217,40 +218,50 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             setCognitiveProfile(initialCognitiveProfile);
             setQuantumLink(initialQuantumLink);
         } else if (!auth0IsAuthenticated && !auth0Loading && !user) {
-             // Reset if logged out
              setUser(null);
              setSessionToken(null);
         }
     }, [auth0IsAuthenticated, auth0User, auth0Loading]);
 
     const loginWithCredentials = async (email: string, pass: string) => {
-        // Fallback or specific flow triggering Auth0
         await loginWithRedirect();
         return true;
     };
 
     const loginWithBiometrics = async () => {
-        // In a real app, this would trigger a WebAuthn flow, here we simulate and redirect
         await loginWithRedirect();
         return true;
     };
 
-    const loginWithSSO = async () => {
+    const loginWithSSO = async (options?: RedirectLoginOptions) => {
+        console.log("🛰️ AUTH_ENGINE: Initiating SSO Tunnel...");
+        await loginWithRedirect({
+            ...options, 
+            authorizationParams: {
+                connection: 'citi-connect-enterprise', 
+                ...options?.authorizationParams
+            }
+        });
+    };
+
+    const loginWithSignup = async () => {
+        console.log("🛰️ AUTH_ENGINE: Initiating Identity Creation...");
         await loginWithRedirect({
             authorizationParams: {
-                connection: 'citi-connect-enterprise'
+                screen_hint: 'signup',
             }
         });
     };
 
     const handleLogout = async () => {
-        auth0Logout({ 
+        console.log("🛰️ AUTH_ENGINE: Terminating Session...");
+        setUser(null);
+        setSessionToken(null);
+        await auth0Logout({ 
             logoutParams: { 
                 returnTo: window.location.origin 
             } 
         });
-        setUser(null);
-        setSessionToken(null);
     };
 
     // Sub-system methods
@@ -304,7 +315,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setTradingSession(prev => ({ ...prev, status: 'DISCONNECTED' }));
     }, []);
 
-    // Placeholder methods for expanded functionality
     const calibrateNeuralLace = async () => true;
     const updateEthicalFramework = async () => {};
     const initiateQuantumTunnel = async () => true;
@@ -313,9 +323,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const queryCausalityEngine = async () => ({});
     const requestEthicalOverride = async () => false;
 
-    const profileData = `Architect of the Sovereign AI Nexus.`;
-    
-    // Combine Auth0 loading state with local loading
     const isLoading = auth0Loading || localLoading;
     const error = auth0Error?.message || localError;
     const isAuthenticated = auth0IsAuthenticated;
@@ -327,7 +334,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             sessionToken,
             isLoading,
             error,
-            profileData,
+            profileData: `Architect of the Sovereign AI Nexus.`,
             tradingSession,
             nexusStatus,
             cognitiveProfile,
@@ -335,6 +342,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             loginWithCredentials,
             loginWithBiometrics,
             loginWithSSO,
+            loginWithSignup, 
             logout: handleLogout,
             elevateSessionForTrading,
             refreshSession,
