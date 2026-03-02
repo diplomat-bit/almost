@@ -5,7 +5,7 @@ import { Scan, Shield, Lock, ArrowRight, Fingerprint, Building2, Infinity, Termi
 
 export const LoginView: React.FC = () => {
     // 🕵️‍♂️ SNATCH THE CORE Handshakeized METHODS
-    const { loginWithCredentials, loginWithBiometrics, loginWithSSO, isAuthenticated, isLoading } = useContext(AuthContext)!;
+    const { loginWithCredentials, loginWithBiometrics, loginWithSSO, loginWithSignup, isAuthenticated, isLoading } = useContext(AuthContext)!;
     const navigate = useNavigate();
     const [email, setEmail] = useState('visionary@sovereign-ai-nexus.io');
     const [password, setPassword] = useState('');
@@ -137,6 +137,18 @@ export const LoginView: React.FC = () => {
                                     <button type="submit" className="w-full bg-white text-black font-extrabold py-3 rounded-xl hover:bg-zinc-200 transition-all mt-4 flex items-center justify-center gap-2 uppercase tracking-widest text-xs">
                                         Authenticate <ArrowRight size={18} />
                                     </button>
+                                    
+                                    <div className="mt-6 text-center border-t border-gray-800/50 pt-4">
+                                        <p className="text-[10px] text-gray-500 uppercase tracking-widest">
+                                            New to the Nexus? 
+                                            <button 
+                                                onClick={(e) => { e.preventDefault(); loginWithSignup(); }}
+                                                className="ml-2 text-cyan-400 hover:text-cyan-300 font-bold underline underline-offset-4"
+                                            >
+                                                Create Identity
+                                            </button>
+                                        </p>
+                                    </div>
                                 </form>
                             )}
 
