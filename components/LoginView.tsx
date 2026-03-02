@@ -1,10 +1,10 @@
-
 import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { Scan, Shield, Lock, ArrowRight, Fingerprint, Globe, Building2, Infinity, Terminal, Loader2 } from 'lucide-react';
+import { Scan, Shield, Lock, ArrowRight, Fingerprint, Building2, Infinity, Terminal, Loader2 } from 'lucide-react';
 
 export const LoginView: React.FC = () => {
+    // 🕵️‍♂️ SNATCH THE CORE Handshakeized METHODS
     const { loginWithCredentials, loginWithBiometrics, loginWithSSO, isAuthenticated, isLoading } = useContext(AuthContext)!;
     const navigate = useNavigate();
     const [email, setEmail] = useState('visionary@sovereign-ai-nexus.io');
@@ -20,12 +20,15 @@ export const LoginView: React.FC = () => {
         "Handshake finalized. Decrypting persona data..."
     ];
 
+    // ⚡️ VORTEX EXIT: Automatic teleport if the session is already active
     useEffect(() => {
         if (isAuthenticated) {
+            console.log("💎 AUTH_SUCCESS: TELEPORTING TO DASHBOARD...");
             navigate('/dashboard');
         }
     }, [isAuthenticated, navigate]);
 
+    // 🌪️ TEMPORAL VISUALIZER: Spinning the bits while the aether charges
     useEffect(() => {
         if (isLoading && authMethod === 'sso') {
             const interval = setInterval(() => {
@@ -35,9 +38,16 @@ export const LoginView: React.FC = () => {
         }
     }, [isLoading, authMethod]);
 
+    // 🔥 THE FIX: THE DYNAMIC REDIRECT BURST
     const handleSSO = async () => {
+        console.log("🛰️ INITIATING CITI-ENTERPRISE BURST... TARGET: #/DASHBOARD");
         setAuthMethod('sso');
-        await loginWithSSO();
+        
+        // JAMES! Look here! We are passing the returnTo state!
+        // Auth0 sees this and says: "Ah, after the 'code' swap, send James to the Dash!"
+        await loginWithSSO({ 
+            appState: { returnTo: '/dashboard' } 
+        });
     };
 
     const handleCredentials = (e: React.FormEvent) => {
@@ -47,14 +57,14 @@ export const LoginView: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-gray-950 flex items-center justify-center p-6 font-sans relative overflow-hidden">
-            {/* Background elements */}
+            {/* 🧬 BACKGROUND FRACTALS */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,#1e1b4b,transparent)] opacity-40"></div>
             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay"></div>
             
             <div className="w-full max-w-md relative z-10">
                 <div className="bg-black/60 backdrop-blur-2xl border border-gray-700/50 rounded-[2.5rem] shadow-2xl overflow-hidden p-10 transform transition-all duration-700 hover:shadow-indigo-500/10">
                     
-                    {/* Brand */}
+                    {/* 🏛️ BRAND LOGIC */}
                     <div className="text-center mb-10">
                         <div className="w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl mx-auto flex items-center justify-center shadow-lg shadow-indigo-500/30 mb-6 group cursor-pointer">
                             <Infinity className="w-8 h-8 text-white transition-transform group-hover:rotate-180 duration-1000" />
@@ -85,12 +95,12 @@ export const LoginView: React.FC = () => {
                                         className="w-full flex items-center justify-center gap-3 bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-2xl shadow-xl shadow-blue-500/20 transition-all transform hover:scale-[1.02] active:scale-[0.98]"
                                     >
                                         <Building2 size={20} />
-                                        Sign In
+                                        Authorize Portal
                                     </button>
                                     <div className="p-4 bg-gray-900/50 rounded-xl border border-gray-800">
-                                        <p className="text-[10px] font-mono text-gray-500 leading-relaxed">
-                                            Handshake Protocol: OIDC / RS256<br/>
-                                            Auth0 Instance: Verified
+                                        <p className="text-[10px] font-mono text-gray-500 leading-relaxed text-center">
+                                            Handshake: CIAM / RS256<br/>
+                                            <span className="text-blue-400">Connection: citi-connect-enterprise</span>
                                         </p>
                                     </div>
                                 </div>
@@ -124,7 +134,7 @@ export const LoginView: React.FC = () => {
                                             <Lock className="w-4 h-4 text-gray-500 absolute left-4 top-3.5" />
                                         </div>
                                     </div>
-                                    <button type="submit" className="w-full bg-white text-black font-extrabold py-3 rounded-xl hover:bg-gray-200 transition-all mt-4 flex items-center justify-center gap-2">
+                                    <button type="submit" className="w-full bg-white text-black font-extrabold py-3 rounded-xl hover:bg-zinc-200 transition-all mt-4 flex items-center justify-center gap-2 uppercase tracking-widest text-xs">
                                         Authenticate <ArrowRight size={18} />
                                     </button>
                                 </form>
@@ -139,15 +149,15 @@ export const LoginView: React.FC = () => {
                                         <div className="absolute inset-0 rounded-full bg-cyan-500 opacity-20 animate-ping group-hover:animate-none"></div>
                                         <Fingerprint size={48} />
                                     </button>
-                                    <p className="text-sm font-medium text-gray-400 uppercase tracking-widest">Scan for Biometric Pulse</p>
+                                    <p className="text-sm font-black text-gray-400 uppercase tracking-widest">Verify Biometric Resonance</p>
                                 </div>
                             )}
 
-                            {/* Options Toggle */}
-                            <div className="pt-6 border-t border-gray-800 flex justify-center gap-6">
-                                <button onClick={() => setAuthMethod('sso')} className={`text-[10px] font-bold uppercase tracking-widest transition-colors ${authMethod === 'sso' ? 'text-white' : 'text-gray-600 hover:text-gray-400'}`}>SSO</button>
-                                <button onClick={() => setAuthMethod('biometric')} className={`text-[10px] font-bold uppercase tracking-widest transition-colors ${authMethod === 'biometric' ? 'text-white' : 'text-gray-600 hover:text-gray-400'}`}>Biometric</button>
-                                <button onClick={() => setAuthMethod('credentials')} className={`text-[10px] font-bold uppercase tracking-widest transition-colors ${authMethod === 'credentials' ? 'text-white' : 'text-gray-600 hover:text-gray-400'}`}>Password</button>
+                            {/* ⚡️ SWITCHBOARD TOGGLE */}
+                            <div className="pt-6 border-t border-gray-800/50 flex justify-center gap-6">
+                                <button onClick={() => setAuthMethod('sso')} className={`text-[10px] font-black uppercase tracking-widest transition-all ${authMethod === 'sso' ? 'text-white scale-110 underline underline-offset-4 decoration-blue-500' : 'text-zinc-600 hover:text-zinc-400'}`}>SSO</button>
+                                <button onClick={() => setAuthMethod('biometric')} className={`text-[10px] font-black uppercase tracking-widest transition-all ${authMethod === 'biometric' ? 'text-white scale-110 underline underline-offset-4 decoration-cyan-500' : 'text-zinc-600 hover:text-zinc-400'}`}>Bio-Sync</button>
+                                <button onClick={() => setAuthMethod('credentials')} className={`text-[10px] font-black uppercase tracking-widest transition-all ${authMethod === 'credentials' ? 'text-white scale-110 underline underline-offset-4 decoration-zinc-400' : 'text-zinc-600 hover:text-zinc-400'}`}>Vault-Key</button>
                             </div>
                         </div>
                     )}
@@ -155,8 +165,8 @@ export const LoginView: React.FC = () => {
             </div>
             
             <footer className="absolute bottom-8 text-center space-y-1">
-                <p className="text-[10px] text-gray-700 font-mono">ENCRYPTION: AES-256-GCM // QUANTUM_RESISTANT_LINK: ACTIVE</p>
-                <p className="text-[10px] text-gray-800">UNAUTHORIZED ACCESS ATTEMPTS ARE LOGGED TO THE PERMANENT LEDGER.</p>
+                <p className="text-[10px] text-zinc-800 font-mono">PROTOCOL: SEAMLESS_DYNAMICS // GRID: 128_OCTET_IPV6</p>
+                <p className="text-[10px] text-zinc-900 uppercase font-black tracking-widest">Terminal Signature: J.B.O. III</p>
             </footer>
         </div>
     );
