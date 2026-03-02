@@ -128,85 +128,106 @@ const WealthTimeline: React.FC = () => {
   // LOGIC: AI INTERACTION (SECURE VERCEL API)
   // ================================================================================================
 
+// 🏹 THE CFO NEURAL SNIPER: Triggering the Leg-3 Burst
   const handleAiCommand = async () => {
-    if (!chatInput.trim()) return;
+    const trimmedInput = chatInput.trim();
+    if (!trimmedInput) return;
 
-    const userMsg: ChatMessage = { role: 'user', content: chatInput, timestamp: new Date().toLocaleTimeString() };
+    // 1. CAPTURE THE TEMPORAL SNAPSHOT
+    const userMsg: ChatMessage = { 
+      role: 'user', 
+      content: trimmedInput, 
+      timestamp: new Date().toLocaleTimeString() 
+    };
+
     setChatHistory(prev => [...prev, userMsg]);
     setChatInput('');
     setIsAiLoading(true);
 
     try {
-      // FIX: Use Serverless API instead of Client-side SDK to prevent crash
+      console.log("🌪️ PULSING THE NEXUS OS... INITIATING Handshakeized PROMPT.");
+      
+      // 📡 TARGETING THE LOWERCASE TUNNEL (100% PARITY WITH VITE PROXY)
       const res = await fetch('/api/gemini', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          // If your server.js security is active, you'd add Authorization here!
+        },
         body: JSON.stringify({ 
           prompt: `
             ${SYSTEM_PROMPT}
-            Current State:
-            - Years: ${projectionYears}
-            - Monthly Contribution: ${monthlyContribution}
-            - Annual Return: ${annualReturn}%
-            - Volatility: ${volatility}%
+            CURRENT REALITY COORDINATES:
+            - Horizon: ${projectionYears} years
+            - Monthly Inflow: ${monthlyContribution}
+            - Expected Return: ${annualReturn}%
+            - Chaos Coefficient (Volatility): ${volatility}%
+            - Reality Drift (Inflation): ${inflationRate}%
             
-            User Command: "${userMsg.content}"
+            SOVEREIGN ARCHITECT INTENT: "${userMsg.content}"
             
-            If the user wants to change parameters, respond with a JSON block at the end like:
+            NOTE: If parameters must shift, encapsulate the bits:
             COMMAND_START {"projectionYears": 30, "monthlyContribution": 20000} COMMAND_END
           `
         })
       });
 
-      let text = "";
-      if (res.ok) {
-        const data = await res.json();
-        text = data.text;
-      } else {
-        // Fallback simulation if API is down
-        text = "Calculating trajectory... Optimization suggestions are currently offline. Running heuristic fallback.";
+      if (!res.ok) {
+        throw new Error(`VAULT_ACCESS_DENIED: ${res.status}`);
       }
 
-      // Parse commands from AI
-      const commandMatch = text.match(/COMMAND_START (.*?) COMMAND_END/);
+      const data = await res.json();
+      const rawAIText = data.text || "SYSTEM_SILENT_ERROR";
+
+      // 🧪 FRACTAL EXTRACTION: Snatching the JSON commands from the aether
+      const commandMatch = rawAIText.match(/COMMAND_START (.*?) COMMAND_END/);
       if (commandMatch) {
         try {
           const cmd = JSON.parse(commandMatch[1]);
+          // DYNAMIC STATE HYDRATION 📈💸
           if (cmd.projectionYears) setProjectionYears(cmd.projectionYears);
           if (cmd.monthlyContribution) setMonthlyContribution(cmd.monthlyContribution);
           if (cmd.annualReturn) setAnnualReturn(cmd.annualReturn);
           if (cmd.volatility) setVolatility(cmd.volatility);
+          if (cmd.inflationRate) setInflationRate(cmd.inflationRate);
           
-          logAction("AI_PARAMETER_ADJUSTMENT", `AI modified engine parameters: ${JSON.stringify(cmd)}`, 'medium');
+          logAction("NEURAL_ENGINE_RECALIBRATION", `Handshakeized Update: ${JSON.stringify(cmd)}`, 'medium');
         } catch (e) {
-          console.error("Failed to parse AI command", e);
+          console.error("COMMAND_DE-COHERENCE!! Check JSON formatting.", e);
         }
       }
 
-      const cleanText = text.replace(/COMMAND_START .*? COMMAND_END/, '').trim();
+      // 🧹 PURGING THE TERMINAL MARKERS FOR DISPLAY
+      const cleanResponse = rawAIText.replace(/COMMAND_START .*? COMMAND_END/, '').trim();
+      
       const aiMsg: ChatMessage = { 
         role: 'ai', 
-        content: cleanText, 
+        content: cleanResponse, 
         timestamp: new Date().toLocaleTimeString() 
       };
-      setChatHistory(prev => [...prev, aiMsg]);
-      logAction("AI_INTERACTION", `User queried AI: ${userMsg.content.substring(0, 30)}...`);
 
-    } catch (error) {
+      setChatHistory(prev => [...prev, aiMsg]);
+      logAction("NEXUS_CORE_PULSE", `Intelligence retrieved for: "${trimmedInput.substring(0, 20)}..."`);
+
+    } catch (error: any) {
+      console.error("💀 NEURAL LINK COLLAPSE:", error.message);
       setChatHistory(prev => [...prev, { 
-        role: 'ai', 
-        content: "Neural link interrupted. Switching to local processing mode.", 
+        role: 'system', 
+        content: "CAUSALITY ALERT: The Quantum Engine hit a localized Akamai wall. Running on auxiliary state.", 
         timestamp: new Date().toLocaleTimeString() 
       }]);
-      logAction("AI_FAILURE", "API connection failed", 'high');
+      logAction("ENGINE_FLAME_OUT", "Failed to bridge to Gemini Core", 'high');
     } finally {
       setIsAiLoading(false);
     }
   };
 
+  // 🎡 TEMPORAL ANCHOR: Forced viewport positioning
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chatHistory]);
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chatHistory, isAiLoading]);
 
   // ================================================================================================
   // LOGIC: THE SIMULATION ENGINE
