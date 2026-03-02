@@ -688,35 +688,26 @@ const ExternalIframeCollection = () => {
 };
 
 const theme = createTheme({ palette: { mode: 'dark' } });
-
 function App() {
+  const onRedirectCallback = (appState: any) => {
+    // 🧹 SCRUB THE EXHAUST: Remove the messy Auth0 query parameters from the URL bar
+    window.history.replaceState({}, document.title, window.location.pathname);
+    
+    // 🚀 TELEPORT: Move to the targeted Nexus quadrant
+    window.location.hash = appState?.returnTo || '/dashboard';
+  };
+
   return (
     <Auth0Provider
-      // 🕵️‍♂️ THE QUANTUM ADDRESS: THE NEURAL SOURCE
       domain="aibankinguniversity.us.auth0.com" 
-      
-      // 🗝️ THE MASTER ACCESS PASSCODE (As specified!)
       clientId="IzBLtCQSn08EFefVGGIRrKUvEyWhzJOS"
-      
+      onRedirectCallback={onRedirectCallback} // ⚡️ ADD THIS PROP
       authorizationParams={{ 
-        // 🌀 THE DYNAMIC ORIGIN:
-        // window.location.origin ensures that whether you're on a local node 
-        // or a static.hf.space rebuild, the handshake finds its home!
         redirect_uri: window.location.origin,
-        
-        // 🏰 THE VAULT AUDIENCE: 
-        // This MUST match the 'audience' in your server.js (Step 4 of our gameplan)
         audience: "https://aibankinguniversity.us.auth0.com/me/",
-        
-        // 🚿 OPEN THE DATA FLOWS
         scope: "openid profile email offline_access"
       }}
-      
-      // 🛠️ HUGGING FACE STABILITY PROTOCOLS (MANDATORY!!!!!!!!!)
-      // Browsers KILL 3rd party cookies in iframes. localstorage is our oxygen!
       cacheLocation="localstorage"
-      
-      // Allows silent reconnection after a code rebuild without asking you to login again
       useRefreshTokens={true}
     >
       <AuthProvider>
