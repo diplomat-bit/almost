@@ -36,7 +36,7 @@ const StyledAccordion = styled(Accordion)(({ theme }) => ({
 }));
 
 const SecurityComplianceView = () => {
-  const { user } = useAuth() || {}; // Access user information from the AuthContext
+  const { user, isLoading } = useAuth(); 
   const [securityLogs, setSecurityLogs] = useState<any[]>([]);
   const [complianceStatus, setComplianceStatus] = useState<any>(null);
   const [consentRecords, setConsentRecords] = useState<any[]>([]);
@@ -129,10 +129,24 @@ const SecurityComplianceView = () => {
     setSnackbarOpen(false);
   };
 
-  if (!user || !user.isAdmin) {
+  // ⚡️ Wait for the handshake to finish before checking permissions
+  if (isLoading) {
+    return (
+      <Box sx={{ p: 3, display: 'flex', justifyContent: 'center' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  // ⚡️ Check the ROLES array for 'ADMIN' or 'SYSTEM_ARCHITECT'
+  const hasAccess = user?.roles?.some(role => ['ADMIN', 'SYSTEM_ARCHITECT'].includes(role));
+
+  if (!hasAccess) {
     return (
       <Box sx={{ p: 3 }}>
-        <Alert severity="error">You do not have permission to view this page.</Alert>
+        <Alert severity="error" variant="filled">
+          RESTRICTED ACCESS: Your current security level ({user?.securityLevel || 'UNKNOWN'}) is insufficient for the Compliance Oracle.
+        </Alert>
       </Box>
     );
   }
@@ -162,12 +176,20 @@ const SecurityComplianceView = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {securityLogs.map((log, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{new Date(log.timestamp).toLocaleString()}</TableCell>
-                      <TableCell>{log.user}</TableCell>
-                      <TableCell>{log.action}</TableCell>
-                      <TableCell>{JSON.stringify(log.details)}</TableCell>
+                  {(securityLogs || []).map((log, index) => (
+                    <TableRow key={index} hover>
+                      <TableCell sx={{ fontFamily: 'mono', fontSize: '0.75rem' }}>
+                        {log.timestamp ? new Date(log.timestamp).toLocaleString() : 'N/A'}
+                      </TableCell>
+                      <TableCell>{log.user || 'Unknown Node'}</TableCell>
+                      <TableCell>
+                        <Typography variant="caption" sx={{ fontWeight: 'bold', color: 'cyan.main' }}>
+                            {log.action}
+                        </Typography>
+                      </TableCell>
+                      <TableCell sx={{ fontSize: '0.7rem', color: 'text.secondary' }}>
+                        {JSON.stringify(log.details)}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -213,10 +235,13 @@ const SecurityComplianceView = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {consentRecords.map((record, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{record.recordId}</TableCell>
+                  {(consentRecords || []).map((record, index) => (
+                    <TableRow key={index} hover>
+                      <TableCell sx={{ fontFamily: 'mono' }}>{record.recordId}</TableCell>
                       <TableCell>{record.user}</TableCell>
+                      <TableCell>
+                        {record.consentGrantedDate ? new Date(record.consentGrantedDate).toLocaleDateString() : 'N/A'}
+                      </TableCell>
                       <TableCell>{new Date(record.consentGrantedDate).toLocaleDateString()}</TableCell>
                       <TableCell>
                         {loading.revokeConsent ? (
