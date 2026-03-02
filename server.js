@@ -19,7 +19,7 @@ const oidcConfig = {
   authRequired: false,
   auth0Logout: true,
   secret: process.env.SESSION_SECRET || 'a-very-long-128-bit-frequency-string-32-chars',
-  baseURL: 'http://localhost:3000', // YOUR HF URL!!
+  baseURL: 'https://aibanking.dev', // YOUR HF URL!!
   clientID: 'IzBLtCQSn08EFefVGGIRrKUvEyWhzJOS', // THE PASSCODE
   issuerBaseURL: 'https://aibankinguniversity.us.auth0.com',
 };
