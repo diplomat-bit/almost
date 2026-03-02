@@ -1,8 +1,7 @@
 {
   "name": "Citibank Demo Business",
   "short_name": "Citi Demo",
-  "start_url": "https://citibankdemobusiness.dev/",
-  "scope": "https://citibankdemobusiness.dev/",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#003b70",
