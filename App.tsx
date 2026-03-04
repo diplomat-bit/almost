@@ -496,7 +496,7 @@ const SAppLayout = () => {
 };
 
 const AI_MODULES = [
-  "https://admin08077-openapi.hf.space",
+  "https://admin08077-aibankinguniversity.static.hf.space",
   "https://admin08077-ai-banking-sovereign.static.hf.space",
   "https://admin08077-aibanke.static.hf.space",
   "https://admin08077-citibank-demo-business-inc-ai-ban-king-demo.static.hf.space",
