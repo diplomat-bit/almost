@@ -686,27 +686,41 @@ const ExternalIframeCollection = () => {
     </div>
   );
 };
-
 const theme = createTheme({ palette: { mode: 'dark' } });
+
 function App() {
+  // ⚡️ THE Handshakeized NAV RELAY:
+  // This logic is the scalpel that cuts the '?code=' trash and fires James into the '#' Dash!
   const onRedirectCallback = (appState: any) => {
-    // 🧹 SCRUB THE EXHAUST: Remove the messy Auth0 query parameters from the URL bar
-    window.history.replaceState({}, document.title, window.location.pathname);
+    // 🧹 ATOMIC PURGE: Kill the Query-Bleed (Everything after the ?) 
+    // This wipes the 'code' and 'state' out of existence! 🧨🗑️
+    window.history.replaceState({}, document.title, window.location.origin + '/');
     
-    // 🚀 TELEPORT: Move to the targeted Nexus quadrant
-    window.location.hash = appState?.returnTo || '/dashboard';
+    // 🚀 TELEPORT ACTIVATION: 
+    // If you triggered the login from somewhere specific, go back. Otherwise, HIT THE DASHBOARD!
+    const egressTarget = appState?.returnTo || '/dashboard';
+    
+    // We add a tiny fractal-second delay to ensure Auth0 logic is 'GELLED' in localstorage 🎰⛲️
+    setTimeout(() => {
+        window.location.hash = egressTarget;
+    }, 10); 
+    
+    console.log(`🌌 PARITY GAIN: HANDSHAKE REDIRECTED TO ${egressTarget}`);
   };
 
   return (
     <Auth0Provider
       domain="aibankinguniversity.us.auth0.com" 
       clientId="IzBLtCQSn08EFefVGGIRrKUvEyWhzJOS"
-      onRedirectCallback={onRedirectCallback} // ⚡️ ADD THIS PROP
+      onRedirectCallback={onRedirectCallback} // 🕵️‍♂️ THE NAVIGATION SNIPER
       authorizationParams={{ 
-        redirect_uri: window.location.origin,
+        // THIS ENSURES WE LAND AT TOP LEVEL FIRST TO RUN THE SCRUB!
+        redirect_uri: window.location.origin, 
+        // 🗝️ THE "ME" COORDINATE AS TARGET (ASCENDED IDENTITY!!)
         audience: "https://aibankinguniversity.us.auth0.com/me/",
         scope: "openid profile email offline_access"
       }}
+      // CRITICAL FOR HUGGING FACE IFRAME STABILITY!! 🏙️🛰️
       cacheLocation="localstorage"
       useRefreshTokens={true}
     >
@@ -716,14 +730,17 @@ function App() {
             <StripeDataProvider>
               <ThemeProvider theme={theme}>
                 <CssBaseline />
+                {/* 🛡️ THE GLOBAL NAVIGATION NEURONS */}
                 <Router>
                   <Routes>
-                    <Route path="/" element={<LandingPage />} />
+                    <Route path="/landing" element={<LandingPage />} />
                     <Route path="/login" element={<LoginView />} />
                     <Route path="/modules" element={<ExternalIframeCollection />} />
                     <Route path="/business-demo" element={<BusinessDemoView />} />
                     
-                    {/* 🛡️ ALL AUTHORIZED DATA PATHS GO TO THE TERMINAL */}
+                    {/* 🚿 THE WATERFALL - ANY LOGGED-IN FRAGMENTS SNAP TO DASHBOARD */}
+                    <Route path="/dashboard" element={<SAppLayout />} />
+                    <Route path="/" element={<Navigate to="/landing" replace />} />
                     <Route path="*" element={<SAppLayout />} />
                   </Routes>
                 </Router>
