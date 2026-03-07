@@ -698,7 +698,8 @@ function App() {
     
     // 🚀 TELEPORT ACTIVATION: 
     // If you triggered the login from somewhere specific, go back. Otherwise, HIT THE DASHBOARD!
-    const egressTarget = appState?.returnTo || '/dashboard';
+    const egressTarget = appState?.returnTo || "#/dashboard";
+         window.location.hash = egressTarget;
     
     // We add a tiny fractal-second delay to ensure Auth0 logic is 'GELLED' in localstorage 🎰⛲️
     setTimeout(() => {
