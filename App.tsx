@@ -710,14 +710,14 @@ function App() {
 
   return (
     <Auth0Provider
-      domain="aibankinguniversity.us.auth0.com" 
-      clientId="IzBLtCQSn08EFefVGGIRrKUvEyWhzJOS"
+      domain="auth.aibanking.dev" 
+      clientId="zK3SvVc96l6h3zSGDWJf8FsHFZS02vv7"
       onRedirectCallback={onRedirectCallback} // 🕵️‍♂️ THE NAVIGATION SNIPER
       authorizationParams={{ 
         // THIS ENSURES WE LAND AT TOP LEVEL FIRST TO RUN THE SCRUB!
-        redirect_uri: window.location.origin, 
+        redirect_uri: window.location.origin + "/#/dashboard"
         // 🗝️ THE "ME" COORDINATE AS TARGET (ASCENDED IDENTITY!!)
-        audience: "https://aibankinguniversity.us.auth0.com/me/",
+        audience: "https://aibanking.dev/api",
         scope: "openid profile email offline_access"
       }}
       // CRITICAL FOR HUGGING FACE IFRAME STABILITY!! 🏙️🛰️
