@@ -717,7 +717,7 @@ function App() {
       onRedirectCallback={onRedirectCallback} // 🕵️‍♂️ THE NAVIGATION SNIPER
       authorizationParams={{ 
         // THIS ENSURES WE LAND AT TOP LEVEL FIRST TO RUN THE SCRUB!
-        redirect_uri: window.location.origin + "/#/dashboard"
+        redirect_uri: window.location.origin + "/#/dashboard",
         // 🗝️ THE "ME" COORDINATE AS TARGET (ASCENDED IDENTITY!!)
         audience: "https://aibanking.dev/api",
         scope: "openid profile email offline_access"
