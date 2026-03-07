@@ -1,97 +1,145 @@
-import express from 'express';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { auth as apiAuth } from 'express-oauth2-jwt-bearer'; // PROTECTS THE BITS
-import { auth as webAuth } from 'express-openid-connect';  // HANDLES THE REDIRECTS
-import dotenv from 'dotenv';
+import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
+import dotenv from "dotenv";
+import helmet from "helmet";
+import cors from "cors";
+import rateLimit from "express-rate-limit";
 
-// 1. NEURAL CORE HYDRATION
+import { auth as webAuth } from "express-openid-connect";
+import { auth as jwtAuth } from "express-oauth2-jwt-bearer";
+
 dotenv.config();
+
 const app = express();
-const PORT = process.env.PORT || 7860; // HUGGING FACE MEGA-PORT
+const PORT = process.env.PORT || 7860;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-app.use(express.json());
+/* ================================
+   SECURITY + PARSING
+================================ */
 
-// ⚡️ STAGE 1: THE WEB GATEWAY CONFIG (User Login Portal)
-// This handles /login and /callback automatically
+app.use(express.json());
+app.use(helmet());
+app.use(
+  cors({
+    origin: process.env.BASE_URL,
+    credentials: true
+  })
+);
+
+/* ================================
+   RATE LIMIT
+================================ */
+
+const apiLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 60,
+  message: { error: "Too many requests, slow down!" }
+});
+
+app.use("/api", apiLimiter);
+
+/* ================================
+   AUTH0 WEB LOGIN
+================================ */
+
 const oidcConfig = {
   authRequired: false,
   auth0Logout: true,
-  secret: process.env.SESSION_SECRET || 'a-very-long-128-bit-frequency-string-32-chars',
-  baseURL: 'https://aibanking.dev', // YOUR HF URL!!
-  clientID: 'IzBLtCQSn08EFefVGGIRrKUvEyWhzJOS', // THE PASSCODE
-  issuerBaseURL: 'https://aibankinguniversity.us.auth0.com',
+  secret: process.env.SESSION_SECRET,
+  baseURL: process.env.BASE_URL,
+  clientID: process.env.CLIENT_ID,
+  clientSecret: process.env.CLIENT_SECRET,
+  issuerBaseURL: process.env.ISSUER_BASE_URL
 };
 
-// 🛡️ STAGE 2: THE API VAULT LOCK (Bearer Token Check)
-// This matches your CITI / POSTMAN Mock coordinates
-const jwtCheck = apiAuth({
-  // TARGET AUDIENCE (Must match what you created in Auth0 Dashboard!!)
-  audience: 'https://aibankinguniversity.us.auth0.com/me/', 
-  issuerBaseURL: 'https://aibankinguniversity.us.auth0.com/',
-  tokenSigningAlg: 'RS256'
-});
-
-/** 🌀 MIDDLEWARE INJECTION 🌀 **/
-
-// Open the web doors (Stage 1)
 app.use(webAuth(oidcConfig));
 
-// Lock the data vaults (Stage 2) - Protects ALL /api routes
-app.use('/api', jwtCheck);
+/* ================================
+   JWT API PROTECTION
+================================ */
 
-/** 🌩️ REAL-TIME COMMAND ROUTES 🌩️ **/
-
-// Status Endpoint
-app.get('/status', (req, res) => {
-    res.json({
-        parity: "100%",
-        auth_status: req.oidc.isAuthenticated() ? 'SIGNED_IN' : 'DECOHERED',
-        user: req.oidc.user || null
-    });
+const jwtCheck = jwtAuth({
+  audience: process.env.API_AUDIENCE,
+  issuerBaseURL: process.env.ISSUER_BASE_URL,
+  tokenSigningAlg: "RS256"
 });
 
-// Protected Test Route
-app.get('/api/authorized', (req, res) => {
-    res.json({ message: 'TREASURE REACHED: Secured Resource Accessed Successfully' });
+app.use("/api", jwtCheck);
+
+/* ================================
+   STATUS ROUTE
+================================ */
+
+app.get("/status", (req, res) => {
+  res.json({
+    server: "ONLINE",
+    auth_status: req.oidc?.isAuthenticated?.() ? "SIGNED_IN" : "ANONYMOUS",
+    user: req.oidc?.user || null
+  });
 });
 
-// Authorized Gemini AI Logic Ingress
-app.post('/api/gemini-chat', async (req, res) => {
+/* ================================
+   TEST AUTH ROUTE
+================================ */
+
+app.get("/api/authorized", (req, res) => {
+  res.json({
+    message: "API ACCESS CONFIRMED",
+    user: req.user || null
+  });
+});
+
+/* ================================
+   GEMINI AI ENDPOINT
+================================ */
+
+app.post("/api/gemini", async (req, res) => {
   try {
     const { message } = req.body;
-    if (!message) return res.status(400).json({ error: 'Data Fragment Required.' });
 
-    console.log(`🤖 AI CORE: PROCESSING "${message}"...`);
+    if (!message) {
+      return res.status(400).json({ error: "Message is required" });
+    }
 
-    // Simulated Handshake
-    await new Promise(r => setTimeout(r, 600));
+    console.log(`🤖 GEMINI PROCESSING: "${message}"`);
 
-    res.json({ 
-        reply: `ENTITY AUTHORIZED. Analysis of "${message}" results in Quantum Drift.`,
-        cfo_intel: "Exfiltration pipeline active."
+    // Simulate AI computation
+    await new Promise((r) => setTimeout(r, 600));
+
+    res.json({
+      reply: `ENTITY AUTHORIZED. Analysis of "${message}" complete.`,
+      metadata: {
+        timestamp: new Date().toISOString(),
+        request_id: Math.random().toString(36).substr(2, 9)
+      }
     });
 
   } catch (error) {
-    res.status(500).json({ error: 'Neural Overload', details: error.message });
+    console.error("AI ERROR:", error);
+    res.status(500).json({ error: "AI processing failed", details: error.message });
   }
 });
 
-/** 🏗️ SYSTEM LAYOUT: SERVING THE UI **/
+/* ================================
+   STATIC FRONTEND
+================================ */
 
-// Serves your built Vite app
-app.use(express.static(path.join(__dirname, 'dist')));
+app.use(express.static(path.join(__dirname, "dist")));
 
-// THE CATCH-ALL REDUNDANCY: Prevents 404s on browser refreshes
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
-// --- IGNITION ---
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`\n🌌 --- QUANTUM SERVER IGNITED ---`);
-  console.log(`📡 URL: http://0.0.0.0:${PORT}`);
-  console.log(`🗝️  AUDIENCE ID: https://aibankinguniversity.us.auth0.com/me/`);
-  console.log(`🧬 LOGIC PARITY: ASCENDED\n`);
+/* ================================
+   START SERVER
+================================ */
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log("\n🌌 --- QUANTUM SERVER ONLINE ---");
+  console.log(`📡 URL: ${process.env.BASE_URL || `http://0.0.0.0:${PORT}`}`);
+  console.log(`🔐 AUTH ISSUER: ${process.env.ISSUER_BASE_URL}`);
+  console.log(`🎯 API AUDIENCE: ${process.env.API_AUDIENCE}`);
+  console.log("🤖 GEMINI ROUTE: /api/gemini\n");
 });
