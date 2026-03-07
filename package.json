@@ -17,6 +17,7 @@
   "dependencies": {
     "@ant-design/icons": "^6.1.0",
     "@auth0/auth0-react": "2.11.0",
+    "ioredis": "5.10.0",
     "@chakra-ui/react": "^2.8.0",
     "@datadog/browser-logs": "^5.33.0",
     "@datadog/browser-rum": "^5.33.0",
