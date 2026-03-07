@@ -6,6 +6,7 @@ import { Cpu, ShieldAlert, Sparkles, Terminal, ArrowLeft, ExternalLink, Grid } f
 import { Auth0Provider } from '@auth0/auth0-react';
 import { datadogLogs } from '@datadog/browser-logs';
 import { Analytics } from '@vercel/analytics/react';
+import { useNavigate } from "react-router-dom";
 
 // Contexts
 import { AuthProvider, AuthContext } from './context/AuthContext';
