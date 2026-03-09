@@ -30,30 +30,23 @@ const REPLAY_WINDOW_MS = 5 * 60 * 1000;
  * 1️⃣ Web Gateway (OIDC) - FIXED HERE ⚡️
  * ------------------------------- **/
 // Change these in your .env or replace them here:
-const oidcConfig = {
-  authRequired: false,
-  auth0Logout: true,
-  secret: process.env.SESSION_SECRET,
-  baseURL: process.env.BASE_URL || 'https://aibanking.dev',
-  clientID: 'zt6OsWvRgUtQsISRILfGFr7XhxwC6JgY',
-  clientSecret: process.env.CLIENT_SECRET,
-  issuerBaseURL: 'https://auth.aibanking.dev/',
-  pushedAuthorizationRequests: true,
-  authorizationParams: {
-    response_type: 'code',
-    scope: 'openid profile email offline_access',
-    audience: 'https://aibanking.dev/api'
+const oidcClient = new UserManager({
+  authority: "https://auth.aibanking.dev/",
+  client_id: "zt6OsWvRgUtQsISRILfGFr7XhxwC6JgY",
+  redirect_uri: window.location.origin + "/callback",
+  response_type: "code",
+  code_challenge_method: "S256",
+  
+  // Explicitly enable PAR
+  // Some versions of oidc-client-ts may need the par_endpoint 
+  // added to 'metadata' if discovery fails to pick it up.
+  metadata: {
+    pushed_authorization_request_endpoint: "https://auth.aibanking.dev/par" 
   },
-  clientAssertionSigningAlg: 'RS256',
+  
+  userStore: new WebStorageStateStore({ store: window.localStorage }),
+});
 
-  // ⚡️ MOVE ROUTES INSIDE CONFIG
-  routes: {
-    login: '/login',
-    logout: '/logout',
-    callback: '/callback',
-    postLogoutRedirect: '/'
-  }
-};
 
 app.use(webAuth(oidcConfig));
 
