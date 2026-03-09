@@ -34,15 +34,24 @@ const oidcConfig = {
   authRequired: false,
   auth0Logout: true,
   secret: process.env.SESSION_SECRET,
-  baseURL: process.env.BASE_URL,
-  clientID: process.env.CLIENT_ID,
+  baseURL: process.env.BASE_URL || 'https://aibanking.dev',
+  clientID: 'zt6OsWvRgUtQsISRILfGFr7XhxwC6JgY',
   clientSecret: process.env.CLIENT_SECRET,
-  // Point to your new OIDC provider
-  issuerBaseURL: 'https://auth.aibanking.dev/', 
+  issuerBaseURL: 'https://auth.aibanking.dev/',
+  pushedAuthorizationRequests: true,
   authorizationParams: {
     response_type: 'code',
     scope: 'openid profile email offline_access',
-    audience: process.env.API_AUDIENCE // Ensure this matches what your new auth server expects
+    audience: 'https://aibanking.dev/api'
+  },
+  clientAssertionSigningAlg: 'RS256',
+
+  // ⚡️ MOVE ROUTES INSIDE CONFIG
+  routes: {
+    login: '/login',
+    logout: '/logout',
+    callback: '/callback',
+    postLogoutRedirect: '/'
   }
 };
 
