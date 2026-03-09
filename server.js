@@ -27,7 +27,7 @@ app.use(express.json());
 const REPLAY_WINDOW_MS = 5 * 60 * 1000; 
 
 /** -------------------------------
- * 1️⃣ Web Gateway (OIDC) - FIXED HERE ⚡️
+ * 1ï¸ âƒ£ Web Gateway (OIDC) - FIXED HERE âš¡ï¸ 
  * ------------------------------- **/
 const oidcConfig = {
   authRequired: false,
@@ -36,20 +36,135 @@ const oidcConfig = {
   baseURL: process.env.BASE_URL,
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  issuerBaseURL: process.env.ISSUER_BASE_URL,
+  // issuerBaseURL: process.env.ISSUER_BASE_URL, // Overridden by discovery below
   
-  // 🛡️ THE FIX: TELLING THE SERVER EXACTLY WHAT WE WANT
+  // ðŸ›¡ï¸  THE FIX: TELLING THE SERVER EXACTLY WHAT WE WANT
   authorizationParams: {
     response_type: 'code', // <--- THIS WAS MISSING!!!
     scope: 'openid profile email offline_access', // Asking for the full ID package
     audience: process.env.API_AUDIENCE // Connects the web user to the API vault
+  },
+  // Implementing the provided OIDC discovery document directly
+  discovery: {
+    "issuer": "https://auth.aibanking.dev/",
+    "jwks_uri": "https://auth.aibanking.dev/.well-known/jwks.json",
+    "token_endpoint": "https://auth.aibanking.dev/oauth/token",
+    "claims_supported": [
+      "aud",
+      "auth_time",
+      "created_at",
+      "email",
+      "email_verified",
+      "exp",
+      "family_name",
+      "given_name",
+      "iat",
+      "identities",
+      "iss",
+      "name",
+      "nickname",
+      "phone_number",
+      "picture",
+      "sub"
+    ],
+    "scopes_supported": [
+      "openid",
+      "profile",
+      "offline_access",
+      "name",
+      "given_name",
+      "family_name",
+      "nickname",
+      "email",
+      "email_verified",
+      "picture",
+      "created_at",
+      "identities",
+      "phone",
+      "address"
+    ],
+    "userinfo_endpoint": "https://auth.aibanking.dev/userinfo",
+    "revocation_endpoint": "https://auth.aibanking.dev/oauth/revoke",
+    "end_session_endpoint": "https://auth.aibanking.dev/oidc/logout",
+    "mtls_endpoint_aliases": {
+      "token_endpoint": "https://mtls.auth.aibanking.dev/oauth/token",
+      "userinfo_endpoint": "https://mtls.auth.aibanking.dev/userinfo",
+      "revocation_endpoint": "https://mtls.auth.aibanking.dev/oauth/revoke",
+      "pushed_authorization_request_endpoint": "https://mtls.auth.aibanking.dev/oauth/par"
+    },
+    "registration_endpoint": "https://auth.aibanking.dev/oidc/register",
+    "authorization_endpoint": "https://auth.aibanking.dev/authorize",
+    "mfa_challenge_endpoint": "https://auth.aibanking.dev/mfa/challenge",
+    "subject_types_supported": [
+      "public"
+    ],
+    "response_modes_supported": [
+      "query",
+      "fragment",
+      "form_post"
+    ],
+    "response_types_supported": [
+      "code",
+      "token",
+      "id_token",
+      "code token",
+      "code id_token",
+      "token id_token",
+      "code token id_token"
+    ],
+    "claims_parameter_supported": false,
+    "request_parameter_supported": true,
+    "backchannel_logout_supported": true,
+    "device_authorization_endpoint": "https://auth.aibanking.dev/oauth/device/code",
+    "request_uri_parameter_supported": false,
+    "code_challenge_methods_supported": [
+      "S256",
+      "plain"
+    ],
+    "global_token_revocation_endpoint": "https://auth.aibanking.dev/oauth/global-token-revocation/connection/{connectionName}",
+    "require_request_uri_registration": false,
+    "dpop_signing_alg_values_supported": [
+      "ES256"
+    ],
+    "backchannel_authentication_endpoint": "https://auth.aibanking.dev/bc-authorize",
+    "backchannel_logout_session_supported": true,
+    "id_token_signing_alg_values_supported": [
+      "HS256",
+      "RS256",
+      "PS256"
+    ],
+    "pushed_authorization_request_endpoint": "https://auth.aibanking.dev/oauth/par",
+    "token_endpoint_auth_methods_supported": [
+      "client_secret_basic",
+      "client_secret_post",
+      "private_key_jwt",
+      "tls_client_auth",
+      "self_signed_tls_client_auth"
+    ],
+    "backchannel_token_delivery_modes_supported": [
+      "poll"
+    ],
+    "tls_client_certificate_bound_access_tokens": true,
+    "request_object_signing_alg_values_supported": [
+      "RS256",
+      "RS384",
+      "PS256"
+    ],
+    "token_endpoint_auth_signing_alg_values_supported": [
+      "RS256",
+      "RS384",
+      "PS256"
+    ],
+    "global_token_revocation_endpoint_auth_methods_supported": [
+      "global-token-revocation+jwt"
+    ]
   }
 };
 
 app.use(webAuth(oidcConfig));
 
 /** -------------------------------
- * 2️⃣ FAPI 1.0 / JWT Middleware
+ * 2ï¸ âƒ£ FAPI 1.0 / JWT Middleware
  * ------------------------------- **/
 const jwtCheck = apiAuth({
   audience: process.env.API_AUDIENCE,
@@ -80,7 +195,7 @@ app.use('/api', jwtCheck, async (req, res, next) => {
 });
 
 /** -------------------------------
- * 3️⃣ Status Endpoint
+ * 3ï¸ âƒ£ Status Endpoint
  * ------------------------------- **/
 app.get('/status', (req, res) => {
   res.json({
@@ -93,14 +208,14 @@ app.get('/status', (req, res) => {
 });
 
 /** -------------------------------
- * 4️⃣ Protected Test Route
+ * 4ï¸ âƒ£ Protected Test Route
  * ------------------------------- **/
 app.get('/api/authorized', (req, res) => {
   res.json({ message: 'TREASURE REACHED: Secured Resource Accessed Successfully' });
 });
 
 /** -------------------------------
- * 5️⃣ Gemini AI Endpoint
+ * 5ï¸ âƒ£ Gemini AI Endpoint
  * ------------------------------- **/
 app.post('/api/gemini', async (req, res) => {
   try {
@@ -111,7 +226,7 @@ app.post('/api/gemini', async (req, res) => {
     // If called from Web Gateway, we use OIDC user. If called via Bearer, we use JWT.
     const userIdentity = req.auth?.payload?.sub || req.oidc?.user?.sub || 'anonymous_node';
 
-    console.log(`🤖 Processing: "${message}" by ${userIdentity}`);
+    console.log(`ðŸ¤– Processing: "${message}" by ${userIdentity}`);
 
     // Call Real Gemini API (Env Variable Protected)
     const geminiUrl = process.env.GEMINI_API_URL || 
@@ -155,14 +270,14 @@ app.post('/api/gemini', async (req, res) => {
 });
 
 /** -------------------------------
- * 6️⃣ Audit Logs (Stub)
+ * 6ï¸ âƒ£ Audit Logs (Stub)
  * ------------------------------- **/
 app.get('/api/audit/logs', async (req, res) => {
    res.json({ status: "Audit log accumulator active", driver: "Redis" });
 });
 
 /** -------------------------------
- * 7️⃣ Serve SPA Frontend
+ * 7ï¸ âƒ£ Serve SPA Frontend
  * ------------------------------- **/
 app.use(express.static(path.join(__dirname, 'dist')));
 app.get('*', (req, res) => {
@@ -170,10 +285,10 @@ app.get('*', (req, res) => {
 });
 
 /** -------------------------------
- * 8️⃣ Launch
+ * 8ï¸ âƒ£ Launch
  * ------------------------------- **/
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`\n🌌 --- QUANTUM SERVER IGNITED ---`);
-  console.log(`📡 URL: ${process.env.BASE_URL || 'http://0.0.0.0:' + PORT}`);
-  console.log(`🧬 PROTOCOL: OIDC CODE FLOW ENABLED`);
+  console.log(`\nðŸŒŒ --- QUANTUM SERVER IGNITED ---`);
+  console.log(`ðŸ“¡ URL: ${process.env.BASE_URL || 'http://0.0.0.0:' + PORT}`);
+  console.log(`ðŸ§¬ PROTOCOL: OIDC CODE FLOW ENABLED`);
 });
