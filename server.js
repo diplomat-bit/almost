@@ -29,6 +29,7 @@ const REPLAY_WINDOW_MS = 5 * 60 * 1000;
 /** -------------------------------
  * 1️⃣ Web Gateway (OIDC) - FIXED HERE ⚡️
  * ------------------------------- **/
+// Change these in your .env or replace them here:
 const oidcConfig = {
   authRequired: false,
   auth0Logout: true,
@@ -36,13 +37,12 @@ const oidcConfig = {
   baseURL: process.env.BASE_URL,
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  issuerBaseURL: process.env.ISSUER_BASE_URL,
-  
-  // 🛡️ THE FIX: TELLING THE SERVER EXACTLY WHAT WE WANT
+  // Point to your new OIDC provider
+  issuerBaseURL: 'https://auth.aibanking.dev/', 
   authorizationParams: {
-    response_type: 'code', // <--- THIS WAS MISSING!!!
-    scope: 'openid profile email offline_access', // Asking for the full ID package
-    audience: process.env.API_AUDIENCE // Connects the web user to the API vault
+    response_type: 'code',
+    scope: 'openid profile email offline_access',
+    audience: process.env.API_AUDIENCE // Ensure this matches what your new auth server expects
   }
 };
 
