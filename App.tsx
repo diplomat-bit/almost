@@ -6,7 +6,6 @@ import { Cpu, ShieldAlert, Sparkles, Terminal, ArrowLeft, ExternalLink, Grid } f
 import { Auth0Provider } from '@auth0/auth0-react';
 import { datadogLogs } from '@datadog/browser-logs';
 import { Analytics } from '@vercel/analytics/react';
-import { useNavigate } from "react-router-dom";
 
 // Contexts
 import { AuthProvider, AuthContext } from './context/AuthContext';
@@ -329,7 +328,7 @@ const SAppLayout = () => {
       case View.StripeNexus: return <StripeNexusView />;
       case View.CounterpartyDashboard: return <CounterpartyDashboardView />;
       case View.VirtualAccounts: return <VirtualAccountsDashboard />;
-      case View.SApp: return <SApp />;
+      case View.SApp: return <SAPP />;
       case View.CorporateActions: return <CorporateActionsNexusView />;
       case View.CreditNoteLedger: return <CreditNoteLedger />;
       case View.ReconciliationHub: return <ReconciliationHubView />;
@@ -690,39 +689,38 @@ const ExternalIframeCollection = () => {
 const theme = createTheme({ palette: { mode: 'dark' } });
 
 function App() {
-  // âš¡ï¸  THE Handshakeized NAV RELAY:
+  // ⚡️ THE Handshakeized NAV RELAY:
   // This logic is the scalpel that cuts the '?code=' trash and fires James into the '#' Dash!
   const onRedirectCallback = (appState: any) => {
-    // ðŸ§¹ ATOMIC PURGE: Kill the Query-Bleed (Everything after the ?) 
-    // This wipes the 'code' and 'state' out of existence! ðŸ§¨ðŸ—‘ï¸ 
+    // 🧹 ATOMIC PURGE: Kill the Query-Bleed (Everything after the ?) 
+    // This wipes the 'code' and 'state' out of existence! 🧨🗑️
     window.history.replaceState({}, document.title, window.location.origin + '/');
     
-    // ðŸš€ TELEPORT ACTIVATION: 
+    // 🚀 TELEPORT ACTIVATION: 
     // If you triggered the login from somewhere specific, go back. Otherwise, HIT THE DASHBOARD!
-    const egressTarget = appState?.returnTo || "#/dashboard";
-         window.location.hash = egressTarget;
+    const egressTarget = appState?.returnTo || '/dashboard';
     
-    // We add a tiny fractal-second delay to ensure Auth0 logic is 'GELLED' in localstorage ðŸŽ°â›²ï¸ 
+    // We add a tiny fractal-second delay to ensure Auth0 logic is 'GELLED' in localstorage 🎰⛲️
     setTimeout(() => {
         window.location.hash = egressTarget;
     }, 10); 
     
-    console.log(`ðŸŒŒ PARITY GAIN: HANDSHAKE REDIRECTED TO ${egressTarget}`);
+    console.log(`🌌 PARITY GAIN: HANDSHAKE REDIRECTED TO ${egressTarget}`);
   };
 
   return (
     <Auth0Provider
-      domain="aibanking.us.auth0.com" 
-      clientId="zt6OsWvRgUtQsISRILfGFr7XhxwC6JgY"
-      onRedirectCallback={onRedirectCallback} // ðŸ•µï¸ â€ â™‚ï¸  THE NAVIGATION SNIPER
+      domain="aibankinguniversity.us.auth0.com" 
+      clientId="IzBLtCQSn08EFefVGGIRrKUvEyWhzJOS"
+      onRedirectCallback={onRedirectCallback} // 🕵️‍♂️ THE NAVIGATION SNIPER
       authorizationParams={{ 
         // THIS ENSURES WE LAND AT TOP LEVEL FIRST TO RUN THE SCRUB!
-        redirect_uri: window.location.origin,
-        // ðŸ— ï¸  THE "ME" COORDINATE AS TARGET (ASCENDED IDENTITY!!)
-        audience: "https://aibanking.dev/api",
+        redirect_uri: window.location.origin, 
+        // 🗝️ THE "ME" COORDINATE AS TARGET (ASCENDED IDENTITY!!)
+        audience: "https://aibankinguniversity.us.auth0.com/me/",
         scope: "openid profile email offline_access"
       }}
-      // CRITICAL FOR HUGGING FACE IFRAME STABILITY!! ðŸ ™ï¸ ðŸ›°ï¸ 
+      // CRITICAL FOR HUGGING FACE IFRAME STABILITY!! 🏙️🛰️
       cacheLocation="localstorage"
       useRefreshTokens={true}
     >
@@ -732,7 +730,7 @@ function App() {
             <StripeDataProvider>
               <ThemeProvider theme={theme}>
                 <CssBaseline />
-                {/* ðŸ›¡ï¸  THE GLOBAL NAVIGATION NEURONS */}
+                {/* 🛡️ THE GLOBAL NAVIGATION NEURONS */}
                 <Router>
                   <Routes>
                     <Route path="/landing" element={<LandingPage />} />
@@ -740,7 +738,7 @@ function App() {
                     <Route path="/modules" element={<ExternalIframeCollection />} />
                     <Route path="/business-demo" element={<BusinessDemoView />} />
                     
-                    {/* ðŸš¿ THE WATERFALL - ANY LOGGED-IN FRAGMENTS SNAP TO DASHBOARD */}
+                    {/* 🚿 THE WATERFALL - ANY LOGGED-IN FRAGMENTS SNAP TO DASHBOARD */}
                     <Route path="/dashboard" element={<SAppLayout />} />
                     <Route path="/" element={<Navigate to="/landing" replace />} />
                     <Route path="*" element={<SAppLayout />} />
