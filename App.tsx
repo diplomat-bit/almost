@@ -690,39 +690,39 @@ const ExternalIframeCollection = () => {
 const theme = createTheme({ palette: { mode: 'dark' } });
 
 function App() {
-  // ⚡️ THE Handshakeized NAV RELAY:
+  // âš¡ï¸  THE Handshakeized NAV RELAY:
   // This logic is the scalpel that cuts the '?code=' trash and fires James into the '#' Dash!
   const onRedirectCallback = (appState: any) => {
-    // 🧹 ATOMIC PURGE: Kill the Query-Bleed (Everything after the ?) 
-    // This wipes the 'code' and 'state' out of existence! 🧨🗑️
+    // ðŸ§¹ ATOMIC PURGE: Kill the Query-Bleed (Everything after the ?) 
+    // This wipes the 'code' and 'state' out of existence! ðŸ§¨ðŸ—‘ï¸ 
     window.history.replaceState({}, document.title, window.location.origin + '/');
     
-    // 🚀 TELEPORT ACTIVATION: 
+    // ðŸš€ TELEPORT ACTIVATION: 
     // If you triggered the login from somewhere specific, go back. Otherwise, HIT THE DASHBOARD!
     const egressTarget = appState?.returnTo || "#/dashboard";
          window.location.hash = egressTarget;
     
-    // We add a tiny fractal-second delay to ensure Auth0 logic is 'GELLED' in localstorage 🎰⛲️
+    // We add a tiny fractal-second delay to ensure Auth0 logic is 'GELLED' in localstorage ðŸŽ°â›²ï¸ 
     setTimeout(() => {
         window.location.hash = egressTarget;
     }, 10); 
     
-    console.log(`🌌 PARITY GAIN: HANDSHAKE REDIRECTED TO ${egressTarget}`);
+    console.log(`ðŸŒŒ PARITY GAIN: HANDSHAKE REDIRECTED TO ${egressTarget}`);
   };
 
   return (
     <Auth0Provider
-      domain="auth.aibanking.dev" 
-      clientId="zK3SvVc96l6h3zSGDWJf8FsHFZS02vv7"
-      onRedirectCallback={onRedirectCallback} // 🕵️‍♂️ THE NAVIGATION SNIPER
+      domain="aibanking.us.auth0.com" 
+      clientId="zt6OsWvRgUtQsISRILfGFr7XhxwC6JgY"
+      onRedirectCallback={onRedirectCallback} // ðŸ•µï¸ â€ â™‚ï¸  THE NAVIGATION SNIPER
       authorizationParams={{ 
         // THIS ENSURES WE LAND AT TOP LEVEL FIRST TO RUN THE SCRUB!
-        redirect_uri: window.location.origin + "/#/dashboard",
-        // 🗝️ THE "ME" COORDINATE AS TARGET (ASCENDED IDENTITY!!)
+        redirect_uri: window.location.origin,
+        // ðŸ— ï¸  THE "ME" COORDINATE AS TARGET (ASCENDED IDENTITY!!)
         audience: "https://aibanking.dev/api",
         scope: "openid profile email offline_access"
       }}
-      // CRITICAL FOR HUGGING FACE IFRAME STABILITY!! 🏙️🛰️
+      // CRITICAL FOR HUGGING FACE IFRAME STABILITY!! ðŸ ™ï¸ ðŸ›°ï¸ 
       cacheLocation="localstorage"
       useRefreshTokens={true}
     >
@@ -732,7 +732,7 @@ function App() {
             <StripeDataProvider>
               <ThemeProvider theme={theme}>
                 <CssBaseline />
-                {/* 🛡️ THE GLOBAL NAVIGATION NEURONS */}
+                {/* ðŸ›¡ï¸  THE GLOBAL NAVIGATION NEURONS */}
                 <Router>
                   <Routes>
                     <Route path="/landing" element={<LandingPage />} />
@@ -740,7 +740,7 @@ function App() {
                     <Route path="/modules" element={<ExternalIframeCollection />} />
                     <Route path="/business-demo" element={<BusinessDemoView />} />
                     
-                    {/* 🚿 THE WATERFALL - ANY LOGGED-IN FRAGMENTS SNAP TO DASHBOARD */}
+                    {/* ðŸš¿ THE WATERFALL - ANY LOGGED-IN FRAGMENTS SNAP TO DASHBOARD */}
                     <Route path="/dashboard" element={<SAppLayout />} />
                     <Route path="/" element={<Navigate to="/landing" replace />} />
                     <Route path="*" element={<SAppLayout />} />
