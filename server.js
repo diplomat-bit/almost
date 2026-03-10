@@ -3,55 +3,37 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { auth as apiAuth } from 'express-oauth2-jwt-bearer';
-import { auth as webAuth } from 'express-openid-connect';
 import dotenv from 'dotenv';
 import fetch from 'node-fetch';
 import crypto from 'crypto';
 import Redis from 'ioredis';
 
-dotenv.config();
+dotenv.config(); // Load environment variables from .env file
 
 const app = express();
-const PORT = process.env.PORT || 7860;
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const PORT = process.env.PORT || 3000; // Default to 3000 for local dev
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Redis Fallback (prevents crash if Redis isn't running locally)
-// In production, ensure REDIS_URL is set!
-const redis = process.env.REDIS_URL 
-  ? new Redis(process.env.REDIS_URL) 
+const redis = process.env.REDIS_URL
+  ? new Redis(process.env.REDIS_URL)
   : { get: async () => null, set: async () => null, incr: async () => 1, expire: async () => null };
 
 app.use(express.json());
 
-// --- Replay Cache / Logic ---
-const REPLAY_WINDOW_MS = 5 * 60 * 1000; 
+// --- Replay Cache / Logic (for API protection) ---
+const REPLAY_WINDOW_MS = 5 * 60 * 1000;
 
 /** -------------------------------
- * 1️⃣ Web Gateway (OIDC) - FIXED HERE ⚡️
+ * 1️⃣ Static File Server for React SPA
  * ------------------------------- **/
-// Change these in your .env or replace them here:
-const oidcClient = new UserManager({
-  authority: "https://auth.aibanking.dev/",
-  client_id: "zt6OsWvRgUtQsISRILfGFr7XhxwC6JgY",
-  redirect_uri: window.location.origin + "/callback",
-  response_type: "code",
-  code_challenge_method: "S256",
-  
-  // Explicitly enable PAR
-  // Some versions of oidc-client-ts may need the par_endpoint 
-  // added to 'metadata' if discovery fails to pick it up.
-  metadata: {
-    pushed_authorization_request_endpoint: "https://auth.aibanking.dev/par" 
-  },
-  
-  userStore: new WebStorageStateStore({ store: window.localStorage }),
-});
-
-
-app.use(webAuth(oidcConfig));
+// Serve static files from the 'dist' directory (your React build output)
+// This must come *before* any wildcard routes to ensure static assets are served.
+app.use(express.static(path.join(__dirname, 'dist')));
 
 /** -------------------------------
- * 2️⃣ FAPI 1.0 / JWT Middleware
+ * 2️⃣ FAPI 1.0 / JWT Middleware for API protection
  * ------------------------------- **/
 const jwtCheck = apiAuth({
   audience: process.env.API_AUDIENCE,
@@ -59,7 +41,7 @@ const jwtCheck = apiAuth({
   tokenSigningAlg: 'RS256'
 });
 
-// Middleware: Replay detection, Scopes, Rate Limiting
+// Apply JWT check and replay detection to all /api routes
 app.use('/api', jwtCheck, async (req, res, next) => {
   try {
     const jti = req.headers['x-jti'] || req.body.jti || crypto.randomUUID();
@@ -82,46 +64,39 @@ app.use('/api', jwtCheck, async (req, res, next) => {
 });
 
 /** -------------------------------
- * 3️⃣ Status Endpoint
+ * 3️⃣ Status Endpoint (API)
  * ------------------------------- **/
 app.get('/status', (req, res) => {
   res.json({
     parity: "100%",
-    // Check authentication via OIDC middleware
-    auth_status: req.oidc.isAuthenticated() ? 'SIGNED_IN' : 'DECOHERED',
-    user: req.oidc.user || null,
+    auth_note: "Frontend manages user session via Auth0Provider. Backend protects APIs.",
     uptime_ms: process.uptime() * 1000
   });
 });
 
 /** -------------------------------
- * 4️⃣ Protected Test Route
+ * 4️⃣ Protected Test Route (API)
  * ------------------------------- **/
 app.get('/api/authorized', (req, res) => {
   res.json({ message: 'TREASURE REACHED: Secured Resource Accessed Successfully' });
 });
 
 /** -------------------------------
- * 5️⃣ Gemini AI Endpoint
+ * 5️⃣ Gemini AI Endpoint (API)
  * ------------------------------- **/
 app.post('/api/gemini', async (req, res) => {
   try {
     const { message } = req.body;
     if (!message) return res.status(400).json({ error: 'Message required.' });
 
-    // Determine identity
-    // If called from Web Gateway, we use OIDC user. If called via Bearer, we use JWT.
-    const userIdentity = req.auth?.payload?.sub || req.oidc?.user?.sub || 'anonymous_node';
-
+    const userIdentity = req.auth?.payload?.sub || 'anonymous_node';
     console.log(`🤖 Processing: "${message}" by ${userIdentity}`);
 
-    // Call Real Gemini API (Env Variable Protected)
-    const geminiUrl = process.env.GEMINI_API_URL || 
+    const geminiUrl = process.env.GEMINI_API_URL ||
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${process.env.GEMINI_API_KEY}`;
-    
-    // Fallback if no key
+
     if (!process.env.GEMINI_API_KEY) {
-      return res.json({ 
+      return res.json({
         reply: "Simulated Response: Add GEMINI_API_KEY to .env to go live.",
         metadata: { audit: "SIMULATION_MODE" }
       });
@@ -140,7 +115,6 @@ app.post('/api/gemini', async (req, res) => {
     const data = await response.json();
     const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text || "NO_DATA";
 
-    // Metadata for FAPI Audit
     const metadata = {
       processedAt: new Date().toISOString(),
       client: userIdentity,
@@ -157,16 +131,17 @@ app.post('/api/gemini', async (req, res) => {
 });
 
 /** -------------------------------
- * 6️⃣ Audit Logs (Stub)
+ * 6️⃣ Audit Logs (API Stub)
  * ------------------------------- **/
 app.get('/api/audit/logs', async (req, res) => {
    res.json({ status: "Audit log accumulator active", driver: "Redis" });
 });
 
 /** -------------------------------
- * 7️⃣ Serve SPA Frontend
+ * 7️⃣ SPA Frontend Fallback
  * ------------------------------- **/
-app.use(express.static(path.join(__dirname, 'dist')));
+// For any other route not matched by static files or API endpoints,
+// serve the React app's index.html. This allows client-side routing to work.
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
@@ -177,5 +152,6 @@ app.get('*', (req, res) => {
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`\n🌌 --- QUANTUM SERVER IGNITED ---`);
   console.log(`📡 URL: ${process.env.BASE_URL || 'http://0.0.0.0:' + PORT}`);
-  console.log(`🧬 PROTOCOL: OIDC CODE FLOW ENABLED`);
+  console.log(`🧬 PROTOCOL: Client-side OIDC (React Auth0Provider)`);
+  console.log(`📂 Serving static files from: ${path.join(__dirname, 'dist')}`);
 });
