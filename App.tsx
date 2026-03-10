@@ -717,7 +717,7 @@ function App() {
         // THIS ENSURES WE LAND AT TOP LEVEL FIRST TO RUN THE SCRUB!
         redirect_uri: window.location.origin, 
         // 🗝️ THE "ME" COORDINATE AS TARGET (ASCENDED IDENTITY!!)
-        audience: "https://auth.aibankin.dev/api",
+        audience: "https://auth.aibanking.dev/api",
         scope: "openid profile email offline_access"
       }}
       // CRITICAL FOR HUGGING FACE IFRAME STABILITY!! 🏙️🛰️
