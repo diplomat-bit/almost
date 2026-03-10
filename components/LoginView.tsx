@@ -1,10 +1,13 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
+import { AuthContext } from '../context/AuthContext'; // Ensure this path is correct
 import { Scan, Shield, Lock, ArrowRight, Fingerprint, Building2, Infinity, Terminal, Loader2 } from 'lucide-react';
 
 export const LoginView: React.FC = () => {
     // 🕵️‍♂️ SNATCH THE CORE Handshakeized METHODS
+    // NOTE: loginWithCredentials, loginWithBiometrics, and loginWithSignup are currently STUBS
+    // in your AuthContext.tsx. They will not perform actual authentication.
+    // The primary functional login is via loginWithSSO.
     const { loginWithCredentials, loginWithBiometrics, loginWithSSO, loginWithSignup, isAuthenticated, isLoading } = useContext(AuthContext)!;
     const navigate = useNavigate();
     const [email, setEmail] = useState('visionary@sovereign-ai-nexus.io');
@@ -30,7 +33,7 @@ export const LoginView: React.FC = () => {
 
     // 🌪️ TEMPORAL VISUALIZER: Spinning the bits while the aether charges
     useEffect(() => {
-        if (isLoading && authMethod === 'sso') {
+        if (isLoading && authMethod === 'sso') { // Only show handshake if loading specific to SSO flow
             const interval = setInterval(() => {
                 setHandshakeStep(prev => (prev + 1) % handshakeMessages.length);
             }, 800);
@@ -38,20 +41,20 @@ export const LoginView: React.FC = () => {
         }
     }, [isLoading, authMethod]);
 
-    // 🔥 THE FIX: THE DYNAMIC REDIRECT BURST
+    // 🔥 THE FIX: THE DYNAMIC REDIRECT BURST for SSO
     const handleSSO = async () => {
         console.log("🛰️ INITIATING CITI-ENTERPRISE BURST... TARGET: #/DASHBOARD");
         setAuthMethod('sso');
-        
         // JAMES! Look here! We are passing the returnTo state!
         // Auth0 sees this and says: "Ah, after the 'code' swap, send James to the Dash!"
-        await loginWithSSO({ 
-            appState: { returnTo: '/dashboard' } 
+        await loginWithSSO({
+            appState: { returnTo: '/dashboard' }
         });
     };
 
     const handleCredentials = (e: React.FormEvent) => {
         e.preventDefault();
+        // This will call the stubbed function in AuthContext and show an alert.
         loginWithCredentials(email, password);
     };
 
@@ -60,10 +63,10 @@ export const LoginView: React.FC = () => {
             {/* 🧬 BACKGROUND FRACTALS */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,#1e1b4b,transparent)] opacity-40"></div>
             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay"></div>
-            
+
             <div className="w-full max-w-md relative z-10">
                 <div className="bg-black/60 backdrop-blur-2xl border border-gray-700/50 rounded-[2.5rem] shadow-2xl overflow-hidden p-10 transform transition-all duration-700 hover:shadow-indigo-500/10">
-                    
+
                     {/* 🏛️ BRAND LOGIC */}
                     <div className="text-center mb-10">
                         <div className="w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl mx-auto flex items-center justify-center shadow-lg shadow-indigo-500/30 mb-6 group cursor-pointer">
@@ -90,7 +93,7 @@ export const LoginView: React.FC = () => {
                         <div className="space-y-6">
                             {authMethod === 'sso' && (
                                 <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                    <button 
+                                    <button
                                         onClick={handleSSO}
                                         className="w-full flex items-center justify-center gap-3 bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-2xl shadow-xl shadow-blue-500/20 transition-all transform hover:scale-[1.02] active:scale-[0.98]"
                                     >
@@ -111,9 +114,9 @@ export const LoginView: React.FC = () => {
                                     <div className="space-y-1">
                                         <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">Identity Identifier</label>
                                         <div className="relative">
-                                            <input 
-                                                type="email" 
-                                                value={email} 
+                                            <input
+                                                type="email"
+                                                value={email}
                                                 onChange={e => setEmail(e.target.value)}
                                                 className="w-full bg-gray-800/50 border border-gray-700 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-cyan-500 transition-all pl-11"
                                                 placeholder="identity@sovereign.io"
@@ -124,9 +127,9 @@ export const LoginView: React.FC = () => {
                                     <div className="space-y-1">
                                         <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">Security Key</label>
                                         <div className="relative">
-                                            <input 
-                                                type="password" 
-                                                value={password} 
+                                            <input
+                                                type="password"
+                                                value={password}
                                                 onChange={e => setPassword(e.target.value)}
                                                 className="w-full bg-gray-800/50 border border-gray-700 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-cyan-500 transition-all pl-11"
                                                 placeholder="••••••••••••"
@@ -137,11 +140,11 @@ export const LoginView: React.FC = () => {
                                     <button type="submit" className="w-full bg-white text-black font-extrabold py-3 rounded-xl hover:bg-zinc-200 transition-all mt-4 flex items-center justify-center gap-2 uppercase tracking-widest text-xs">
                                         Authenticate <ArrowRight size={18} />
                                     </button>
-                                    
+
                                     <div className="mt-6 text-center border-t border-gray-800/50 pt-4">
                                         <p className="text-[10px] text-gray-500 uppercase tracking-widest">
-                                            New to the Nexus? 
-                                            <button 
+                                            New to the Nexus?
+                                            <button
                                                 onClick={(e) => { e.preventDefault(); loginWithSignup(); }}
                                                 className="ml-2 text-cyan-400 hover:text-cyan-300 font-bold underline underline-offset-4"
                                             >
@@ -154,7 +157,7 @@ export const LoginView: React.FC = () => {
 
                             {authMethod === 'biometric' && (
                                 <div className="flex flex-col items-center justify-center space-y-6 py-8 animate-in fade-in zoom-in duration-500">
-                                    <button 
+                                    <button
                                         onClick={loginWithBiometrics}
                                         className="w-24 h-24 rounded-full bg-cyan-600/20 border border-cyan-500/50 flex items-center justify-center text-cyan-400 hover:bg-cyan-600/30 transition-all relative group"
                                     >
@@ -175,7 +178,7 @@ export const LoginView: React.FC = () => {
                     )}
                 </div>
             </div>
-            
+
             <footer className="absolute bottom-8 text-center space-y-1">
                 <p className="text-[10px] text-zinc-800 font-mono">PROTOCOL: SEAMLESS_DYNAMICS // GRID: 128_OCTET_IPV6</p>
                 <p className="text-[10px] text-zinc-900 uppercase font-black tracking-widest">Terminal Signature: J.B.O. III</p>
