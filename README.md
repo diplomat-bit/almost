@@ -42,7 +42,7 @@ Name | Type | Description | Notes
 
 # SwaggerClient::AccountApi
 
-All URIs are relative to *https://sandbox.apihub.citi.com/gcb//api*
+All URIs are relative to 
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -354,7 +354,7 @@ Name | Type | Description | Notes
 
 # SwaggerClient::AccountsApi
 
-All URIs are relative to *https://sandbox.apihub.citi.com/gcb//api*
+All URIs are relative to 
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -4256,7 +4256,7 @@ Name | Type | Description | Notes
 
 # SwaggerClient::BankingApi
 
-All URIs are relative to *https://sandbox.apihub.citi.com/gcb//cds-au/v1*
+All URIs are relative to *cds-au/v1*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -4906,7 +4906,7 @@ Name | Type | Description | Notes
 
 # SwaggerClient::CARDSApi
 
-All URIs are relative to *https://sandbox.apihub.citi.com/gcb//api*
+All URIs are relative to 
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -4984,7 +4984,7 @@ No authorization required
 
 # SwaggerClient::CROSSPRODUCTUTILITIESApi
 
-All URIs are relative to *https://sandbox.apihub.citi.com/gcb//api*
+All URIs are relative to 
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -5200,7 +5200,7 @@ Name | Type | Description | Notes
 
 # SwaggerClient::CardServicingApi
 
-All URIs are relative to *https://sandbox.apihub.citi.com/gcb//api*
+All URIs are relative to 
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -5512,7 +5512,7 @@ Name | Type | Description | Notes
 
 # SwaggerClient::CardsApi
 
-All URIs are relative to *https://sandbox.apihub.citi.com/gcb//api*
+All URIs are relative to 
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -8017,7 +8017,7 @@ Name | Type | Description | Notes
 
 # SwaggerClient::CreditCardsApi
 
-All URIs are relative to *https://sandbox.apihub.citi.com/gcb//api*
+All URIs are relative to 
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -8724,7 +8724,7 @@ Name | Type | Description | Notes
 
 # SwaggerClient::CrossProductUtilitiesApi
 
-All URIs are relative to *https://sandbox.apihub.citi.com/gcb//api*
+All URIs are relative to 
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -8918,7 +8918,7 @@ Name | Type | Description | Notes
 
 # SwaggerClient::CustomerApi
 
-All URIs are relative to *https://sandbox.apihub.citi.com/gcb//api*
+All URIs are relative to 
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -8995,7 +8995,7 @@ No authorization required
 
 # SwaggerClient::CustomerFoundationalApi
 
-All URIs are relative to *https://sandbox.apihub.citi.com/gcb//api*
+All URIs are relative to 
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -9613,7 +9613,7 @@ Name | Type | Description | Notes
 
 # SwaggerClient::DefaultApi
 
-All URIs are relative to *https://sandbox.apihub.citi.com/gcb//api*
+All URIs are relative to 
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -12884,7 +12884,7 @@ Name | Type | Description | Notes
 
 # SwaggerClient::OfferAndDecisionManagementApi
 
-All URIs are relative to *https://sandbox.apihub.citi.com/gcb//api*
+All URIs are relative to 
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -13212,7 +13212,7 @@ No authorization required
 
 # SwaggerClient::OnboardingApi
 
-All URIs are relative to *https://sandbox.apihub.citi.com/gcb//api*
+All URIs are relative to 
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -14441,7 +14441,7 @@ Name | Type | Description | Notes
 
 # SwaggerClient::ProductsApi
 
-All URIs are relative to *https://sandbox.apihub.citi.com/gcb//cds-au/v1*
+All URIs are relative to *cds-au/v1*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -14781,7 +14781,7 @@ end
 
 ## Documentation for API Endpoints
 
-All URIs are relative to */gcgapi/docmgmt/taxforms/v1*
+All URIs are relative to */docmgmt/taxforms/v1*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
@@ -16163,7 +16163,7 @@ Name | Type | Description | Notes
 
 # SwaggerClient::RewardsApi
 
-All URIs are relative to *https://sandbox.apihub.citi.com/gcb//api*
+All URIs are relative to 
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -16670,7 +16670,7 @@ Name | Type | Description | Notes
 
 # SwaggerClient::TaxStatementsApi
 
-All URIs are relative to */gcgapi/docmgmt/taxforms/v1*
+All URIs are relative to */docmgmt/taxforms/v1*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -17601,7 +17601,7 @@ Name | Type | Description | Notes
 
 # SwaggerClient::UsersApi
 
-All URIs are relative to *https://sandbox.apihub.citi.com/gcb//api*
+All URIs are relative to 
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
