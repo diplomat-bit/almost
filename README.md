@@ -1,38 +1,5 @@
 
-<style>
-body {
-    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    line-height: 1.6;
-}
-h1 {
-    color: #0b3d91;
-    border-bottom: 3px solid #0b3d91;
-    padding-bottom: 6px;
-}
-h2 {
-    color: #1f4fbf;
-}
-h3 {
-    color: #2c6bed;
-}
-code, pre {
-    background-color: #0f172a;
-    color: #e2e8f0;
-    padding: 6px;
-    border-radius: 6px;
-}
-table {
-    border-collapse: collapse;
-    width: 100%;
-}
-th, td {
-    border: 1px solid #d1d5db;
-    padding: 8px;
-}
-th {
-    background-color: #f1f5f9;
-}
-</style>
+
 
 # Executive Technical Documentation
 
