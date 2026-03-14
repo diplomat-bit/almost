@@ -637,32 +637,46 @@ function App() {
       cacheLocation="localstorage"
       useRefreshTokens={true}
     >
-      <AuthProvider>
-        <DataProvider>
-          <MoneyMovementProvider>
-            <StripeDataProvider>
-              <ThemeProvider theme={theme}>
-                <CssBaseline />
-                <Router>
-                  <Routes>
-                    <Route path="/landing" element={<LandingPage />} />
-                    <Route path="/login" element={<LoginView />} /> {/* This route will use your LoginView */}
-                    <Route path="/modules" element={<ExternalIframeCollection />} />
-                    <Route path="/business-demo" element={<BusinessDemoView />} />
+      // 1️⃣ Update onRedirectCallback
+const onRedirectCallback = (appState) => {
+  // If Auth0 provides a returnTo, use it; otherwise default to /dashboard
+  window.location.replace(appState?.returnTo || "/dashboard");
+};
 
-                    <Route path="/dashboard" element={<SAppLayout />} />
-                    <Route path="/" element={<Navigate to="/landing" replace />} />
-                    <Route path="*" element={<SAppLayout />} /> {/* Fallback for authenticated users */}
-                  </Routes>
-                </Router>
-              </ThemeProvider>
-            </StripeDataProvider>
-          </MoneyMovementProvider>
-        </DataProvider>
-      </AuthProvider>
-      <Analytics />
-    </Auth0Provider>
-  );
-}
-
+<Auth0Provider
+  domain={import.meta.env.REACT_APP_AUTH0_DOMAIN || 'auth.aibanking.dev'}
+  clientId={import.meta.env.REACT_APP_AUTH0_CLIENT_ID || 'zt6OsWvRgUtQsISRILfGFr7XhxwC6JgY'}
+  onRedirectCallback={onRedirectCallback}
+  authorizationParams={{
+    redirect_uri: window.location.origin, // keep same
+    audience: import.meta.env.REACT_APP_API_AUDIENCE || "https://auth.aibanking.dev/api",
+    scope: "openid profile email offline_access"
+  }}
+  cacheLocation="localstorage"
+  useRefreshTokens={true}
+>
+  <AuthProvider>
+    <DataProvider>
+      <MoneyMovementProvider>
+        <StripeDataProvider>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <Router>
+              <Routes>
+                <Route path="/landing" element={<LandingPage />} />
+                <Route path="/login" element={<LoginView />} />
+                <Route path="/modules" element={<ExternalIframeCollection />} />
+                <Route path="/business-demo" element={<BusinessDemoView />} />
+                <Route path="/dashboard" element={<SAppLayout />} />
+                <Route path="/" element={<Navigate to="/dashboard" replace />} /> {/* <-- changed */}
+                <Route path="*" element={<Navigate to="/dashboard" replace />} /> {/* <-- changed */}
+              </Routes>
+            </Router>
+          </ThemeProvider>
+        </StripeDataProvider>
+      </MoneyMovementProvider>
+    </DataProvider>
+  </AuthProvider>
+  <Analytics />
+</Auth0Provider>
 export default App;
