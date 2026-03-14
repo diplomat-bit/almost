@@ -615,35 +615,13 @@ const SAppLayout = () => {
 const theme = createTheme({ palette: { mode: 'dark' } });
 
 function App() {
-  const onRedirectCallback = (appState: any) => {
-    window.history.replaceState({}, document.title, window.location.origin + '/');
-    const egressTarget = appState?.returnTo || '/dashboard';
-    setTimeout(() => {
-        window.location.hash = egressTarget;
-        console.log(`🌌 PARITY GAIN: HANDSHAKE REDIRECTED TO ${egressTarget}`);
-    }, 10);
-  };
-
-  return (
-    <Auth0Provider
-      domain={import.meta.env.REACT_APP_AUTH0_DOMAIN || 'auth.aibanking.dev'}
-      clientId={import.meta.env.REACT_APP_AUTH0_CLIENT_ID || 'zt6OsWvRgUtQsISRILfGFr7XhxwC6JgY'}
-      onRedirectCallback={onRedirectCallback}
-      authorizationParams={{
-        redirect_uri: window.location.origin,
-        audience: import.meta.env.REACT_APP_API_AUDIENCE || "https://auth.aibanking.dev/api",
-        scope: "openid profile email offline_access"
-      }}
-      cacheLocation="localstorage"
-      useRefreshTokens={true}
-    >
-      // 1️⃣ Update onRedirectCallback
-const onRedirectCallback = (appState) => {
+  const onRedirectCallback = (appState) => {
   // If Auth0 provides a returnTo, use it; otherwise default to /dashboard
   window.location.replace(appState?.returnTo || "/dashboard");
 };
 
-<Auth0Provider
+  return (
+    <Auth0Provider
   domain={import.meta.env.REACT_APP_AUTH0_DOMAIN || 'auth.aibanking.dev'}
   clientId={import.meta.env.REACT_APP_AUTH0_CLIENT_ID || 'zt6OsWvRgUtQsISRILfGFr7XhxwC6JgY'}
   onRedirectCallback={onRedirectCallback}
