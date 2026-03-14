@@ -626,17 +626,17 @@ function App() {
 
   return (
     <Auth0Provider
-      domain={import.meta.env.REACT_APP_AUTH0_DOMAIN || 'auth.aibanking.dev'}
-      clientId={import.meta.env.REACT_APP_AUTH0_CLIENT_ID || 'zt6OsWvRgUtQsISRILfGFr7XhxwC6JgY'}
-      onRedirectCallback={onRedirectCallback}
-      authorizationParams={{
-        redirect_uri: window.location.origin,
-        audience: import.meta.env.REACT_APP_API_AUDIENCE || 'https://auth.aibanking.dev/api',
-        scope: 'openid profile email offline_access',
-      }}
-      cacheLocation="localstorage"
-      useRefreshTokens={true}
-    >
+  domain={import.meta.env.REACT_APP_AUTH0_DOMAIN || 'auth.aibanking.dev'}
+  clientId={import.meta.env.REACT_APP_AUTH0_CLIENT_ID || 'zt6OsWvRgUtQsISRILfGFr7XhxwC6JgY'}
+  authorizationParams={{
+    redirect_uri: window.location.origin,
+    audience: import.meta.env.REACT_APP_API_AUDIENCE || 'https://auth.aibanking.dev/api',
+    scope: 'openid profile email offline_access'
+  }}
+  useRefreshTokens={true}
+  cacheLocation="localstorage"
+  usePushedAuthorizationRequests={true} // <-- NEW
+>
       <AuthProvider>
         <DataProvider>
           <MoneyMovementProvider>
